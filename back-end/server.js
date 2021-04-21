@@ -31,5 +31,8 @@ app.use(cookieSession({
 const employees = require("./employees.js");
 app.use("/api/employees", employees.routes);
 
-// listen on port 3002
-app.listen(3002, () => console.log('Server listening on port 3002!'));
+const timesheets = require("./timesheets.js");
+app.use("/api/timesheets", timesheets.routes);
+
+// listen on port 3003
+app.listen(3003, () => console.log('Server listening on port 3003!'));
