@@ -36,24 +36,15 @@
           </tr>
           </thead>
           <tbody>
-          <tr>
-            <th scope="row-dark">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
-            <td>@mdo</td>
-            <td>@mdo</td>
-            <td>@mdo</td>
-          </tr>
-          <tr>
-            <th scope="row-dark">2</th>
-            <td>Jacob</td>
-            <td>Thornton</td>
-            <td>@fat</td>
-            <td>@fat</td>
-            <td>@fat</td>
-            <td>@fat</td>
-          </tr>
+            <tr v-for="index in 7" :key="index">
+              <th scope="row-dark">{{ index }}</th>
+              <td>{{ 15 - index }} April 2021</td>
+              <td>8:30 am</td>
+              <td>12:30 pm</td>
+              <td>1:30 pm</td>
+              <td>5:25 pm</td>
+              <td>8 hrs 15 min</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -71,7 +62,7 @@
                 <path d="M8 3a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 3zm8 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zm-13.5.5a.5.5 0 0 0 0-1h-2a.5.5 0 0 0 0 1h2zm11.157-6.157a.5.5 0 0 1 0 .707l-1.414 1.414a.5.5 0 1 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm-9.9 2.121a.5.5 0 0 0 .707-.707L3.05 5.343a.5.5 0 1 0-.707.707l1.414 1.414zM8 7a4 4 0 0 0-4 4 .5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5 4 4 0 0 0-4-4z"/>
               </svg>
             </label>
-            <b-form-timepicker v-model="clockIn" locale="en"></b-form-timepicker>
+            <b-form-timepicker v-model="timesheet.clockIn" locale="en"></b-form-timepicker>
           </div>
           <div class="text-start col">
             <label>
@@ -80,7 +71,7 @@
                 <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"/>
               </svg>
             </label>
-            <b-form-timepicker v-model="clockOutLunch" locale="en"></b-form-timepicker>
+            <b-form-timepicker v-model="timesheet.clockOutLunch" locale="en"></b-form-timepicker>
           </div>
           <div class="text-start col">
             <label>
@@ -89,7 +80,7 @@
                 <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"/>
               </svg>
             </label>
-            <b-form-timepicker v-model="clockInLunch" locale="en"></b-form-timepicker>
+            <b-form-timepicker v-model="timesheet.clockInLunch" locale="en"></b-form-timepicker>
           </div>
           <div class="form-group text-start col">
             <label>
@@ -98,11 +89,14 @@
                 <path d="M8 3a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 3zm8 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zm-13.5.5a.5.5 0 0 0 0-1h-2a.5.5 0 0 0 0 1h2zm11.157-6.157a.5.5 0 0 1 0 .707l-1.414 1.414a.5.5 0 1 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm-9.9 2.121a.5.5 0 0 0 .707-.707L3.05 5.343a.5.5 0 1 0-.707.707l1.414 1.414zM8 7a4 4 0 0 0-4 4 .5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5 4 4 0 0 0-4-4zm0 1a3 3 0 0 1 2.959 2.5H5.04A3 3 0 0 1 8 8z"/>
               </svg>
             </label>
-            <b-form-timepicker v-model="clockOut" locale="en"></b-form-timepicker>
+            <b-form-timepicker v-model="timesheet.clockOut" locale="en"></b-form-timepicker>
           </div>
         </div>
         <div class="row justify-content-center">
-          <div @click="submitTimesheet" class="btn btn-warning col-1">Submit</div>
+          <div @click="submitTimesheet" class="btn btn-warning col-4">Submit</div>
+        </div>
+        <div class="row justify-content-center">
+          <div @click="deleteTimesheet" class="btn btn-danger col-4">Delete</div>
         </div>
       </div>
     </div>
@@ -118,47 +112,90 @@ export default {
   data() {
     return {
       flag: false,
+      error: '',
+      createSheet: false,
 
       date: null,
-      clockIn: '',
-      clockOut: '',
-      clockInLunch: '',
-      clockOutLunch: '',
-
+      timesheet: {},
       timesheets: [],
     }
   },
   computed: {
     employee() {
       return this.$root.$data.employee;
-    }
+    },
   },
   created() {
     this.getDate();
+    this.getTimesheets();
   },
   methods: {
     getDate(date) {
       this.date =  moment(date).format('DD MMMM YYYY');
-      /*if (moment(date).diff(Date.now(), 'days') < 15)
-        return moment(date).fromNow();
-      else
-        return moment(date).format('d MMMM YYYY');*/
-    },
-    submitTimesheet(){
-      console.log("Clicked Submit");
     },
     async getTimesheets() {
       try {
         let response = await axios.get("/api/timesheets");
         this.timesheets = response.data.timesheets;
+        this.getTimesheet();
         return true;
       } catch (error) {
         console.log(error);
       }
     },
+    getTimesheet() {
+      this.timesheet = this.timesheets.find(item => item.date === this.date);
+      if (this.timesheet === undefined) {
+        this.createSheet = true;
+        this.timesheet = {clockIn: "", clockInLunch: "", clockOutLunch: "", clockOut: ""}
+      }
+    },
+    async submitTimesheet() {
+      if (this.createSheet) {
+        await this.createTimesheet();
+      } else {
+        await this.editTimesheet();
+      }
+    },
     async editTimesheet() {
-
-    }
+      try {
+        let response = await axios.put("/api/timesheets/" + this.timesheet._id, {
+          clockIn: this.timesheet.clockIn,
+          clockOutLunch: this.timesheet.clockOutLunch,
+          clockInLunch: this.timesheet.clockInLunch,
+          clockOut: this.timesheet.clockOut,
+          dayTotal: "",
+        });
+        this.timesheet = response.data.timesheet;
+        this.getTimesheet();
+      } catch (error) {
+        this.error = error.response.message;
+      }
+    },
+    async createTimesheet(){
+      try {
+        await axios.post("/api/timesheets", {
+          date: this.date,
+          clockIn: this.timesheet.clockIn,
+          clockOutLunch: this.timesheet.clockOutLunch,
+          clockInLunch: this.timesheet.clockInLunch,
+          clockOut: this.timesheet.clockOut,
+          dayTotal: "",
+        });
+        await this.getTimesheets();
+        return true;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async deleteTimesheet() {
+      try {
+        await axios.delete("/api/timesheets/" + this.timesheet._id);
+        this.getTimesheets();
+      } catch (error) {
+        console.log(error);
+      }
+    },
   }
 }
 </script>
